@@ -8,11 +8,15 @@ import skipFormatting from 'eslint-config-prettier/flat'
 // import { configureVueProject } from '@vue/eslint-config-typescript'
 // configureVueProject({ scriptLangs: ['ts', 'tsx'] })
 // More info at https://github.com/vuejs/eslint-config-typescript/#advanced-setup
-
+const isDev = process.env.NODE_ENV === 'development'
 export default defineConfigWithVueTs(
   {
     name: 'app/files-to-lint',
-    files: ['**/*.{vue,ts,mts,tsx}']
+    files: ['**/*.{vue,ts,mts,tsx}'],
+    rules: {
+      'no-debugger': isDev ? 'warn' : 'error',
+      'no-console': isDev ? 'warn' : 'error'
+    }
   },
 
   globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),

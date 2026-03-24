@@ -8,7 +8,7 @@ const TIME_OUT = 1000
 if (import.meta.env.PROD) {
   BASE_URL = 'http://codercba.prod:8000'
 } else {
-  BASE_URL = 'http://192.168.1.2:3000'
+  BASE_URL = 'http://localhost:3000'
 }
 
 export { BASE_URL, TIME_OUT }

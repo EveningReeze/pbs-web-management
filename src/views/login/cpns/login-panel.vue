@@ -3,68 +3,72 @@
         <div class="title">
             <h1>个人博客后台管理系统</h1>
         </div>
-        <el-form style="max-width: 600px" :model="accountData" :rules="loginRules" label-width="auto">
-            <el-form-item label="账号：" prop="name">
-                <el-input v-model="accountData.name" />
+        <el-form ref="ruleFormRef" style="max-width: 600px" :model="accountData" :rules="loginRules" label-width="auto">
+            <el-form-item label="账号：" prop="username">
+                <el-input v-model="accountData.username" placeholder="请输入账号" />
             </el-form-item>
-            <el-form-item label="密码：" prop="password">
-                <el-input v-model="accountData.password" />
+            <el-form-item label="密码：" prop="password" show-password>
+                <el-input v-model="accountData.password" type="password" placeholder="请输入密码" show-password />
             </el-form-item>
         </el-form>
         <div class="operation">
             <el-checkbox v-model="isRememberPwd" label="记住密码" size="large" />
             <el-link type="primary">忘记密码?</el-link>
         </div>
-        <el-button @click="handleLogin()" class="login-btn" type="primary" size="large">Primary</el-button>
+        <el-button @click="handleLogin(ruleFormRef)" class="login-btn" type="primary" size="large">登录</el-button>
 
     </div>
 </template>
 
 <script setup lang="ts">
-import { ElMessage } from 'element-plus';
 import { ref, reactive, onMounted } from 'vue';
-import { isRegisterApi } from "@/api/index"
-
+import type { FormInstance, FormRules } from 'element-plus'
+import { loginApi } from "@/api/index"
+import { ElMessage } from 'element-plus'
+import useLoginStore from "@/store/login/login"
+import type { LoginForm, LoginResponse } from "@/types"
 const isRememberPwd = ref(false)
-const accountData = reactive({
-    name: "",
+const ruleFormRef = ref<FormInstance>()
+const loginStore = useLoginStore()
+const accountData = reactive<LoginForm>({
+    username: "",
     password: ""
 })
-const loginRules = {
-    name: [{ required: true, message: '请输入账号~', triiger: 'change' }],
-    password: [{ required: true, message: '请输入密码~', triiger: 'change' }]
-}
-const handleLogin = async () => {
-    // try {
-    //     const response = await axios.post('http://localhost:8080/api/test', {
-    //         name: accountData.name,
-    //         password: accountData.password,
-    //         remember: isRememberPwd.value
-    //     })
+const loginRules = reactive<FormRules>({
+    username: [{ required: true, message: '请输入账号~', trigger: 'change' }],
+    password: [{ required: true, message: '请输入密码~', trigger: 'change' }]
+})
+const handleLogin = async (formEl: FormInstance | undefined) => {
+    if (!formEl) return
+    let data = {
+        username: accountData.username,
+        password: accountData.password,
+    }
 
-    //     if (response.data.code === 200) {
-    //         ElMessage.success('登录成功！')
-    //         console.log('用户信息：', response.data.data)
-    //         // 这里可以跳转到主页
-    //         // router.push('/dashboard')
-    //     } else {
-    //         ElMessage.error(response.data.message)
-    //     }
-    // } catch (error) {
-    //     ElMessage.error('登录失败，请检查网络连接')
-    //     console.error('登录错误：', error)
-    // }
-}
+    await formEl.validate(async (valid, fields) => {
 
-const isRegister = () => {
-    isRegisterApi().then((res) => {
-        console.log(res)
-    }).catch((err) => {
-        console.log(err, "err")
+        if (valid) {
+            try {
+                const res = await loginApi(data);
+                if (res.code === 200) {
+                    console.log(res.data);
+
+                    loginStore.loginAccountActions(res.data); // res.data 的类型为 LoginUserInfo
+                    ElMessage.success('登录成功');
+                } else {
+                    ElMessage.error(res.message);
+                }
+            } catch (err) {
+                ElMessage.error('网络错误或服务器异常');
+            }
+        } else {
+            ElMessage.error('账号密码错误请重新输入')
+        }
     })
 }
+
+
 onMounted(() => {
-    isRegister()
 })
 
 </script>
