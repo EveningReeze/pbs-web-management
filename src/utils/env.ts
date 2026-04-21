@@ -1,7 +1,7 @@
 // console.Log(import.meta.env.MODE)
-console.log(import.meta.env.DEV) // 是否开发环境
-console.log(import.meta.env.PROD) // 是否生产环境
-console.log(import.meta.env.SSR) // 是否是服务器端渲染(server side render)
+// console.log(import.meta.env.DEV) // 是否开发环境
+// console.log(import.meta.env.PROD) // 是否生产环境
+// console.log(import.meta.env.SSR) // 是否是服务器端渲染(server side render)
 
 let BASE_URL = ''
 const TIME_OUT = 1000

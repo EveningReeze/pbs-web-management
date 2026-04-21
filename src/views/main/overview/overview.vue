@@ -1,6 +1,6 @@
 <template>
-    <div class="not-found">
-        <h2>404</h2>
+    <div class="overview">
+        overview
     </div>
 </template>
 
@@ -9,5 +9,7 @@
 </script>
 
 <style lang="less" scoped>
-.not-found {}
+.overview {
+    color: aqua;
+}
 </style>

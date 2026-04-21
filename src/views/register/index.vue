@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="ts">
-import { ElMessage } from 'element-plus'
 import { ref, reactive, onMounted } from 'vue';
 import { registerApi } from "@/api/index"
 import type { FormInstance, FormRules } from 'element-plus'

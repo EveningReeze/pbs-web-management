@@ -24,7 +24,6 @@
 import { ref, reactive, onMounted } from 'vue';
 import type { FormInstance, FormRules } from 'element-plus'
 import { loginApi } from "@/api/index"
-import { ElMessage } from 'element-plus'
 import useLoginStore from "@/store/login/login"
 import type { LoginForm, LoginResponse } from "@/types"
 const isRememberPwd = ref(false)
@@ -51,10 +50,8 @@ const handleLogin = async (formEl: FormInstance | undefined) => {
             try {
                 const res = await loginApi(data);
                 if (res.code === 200) {
-                    console.log(res.data);
-
+                    ElMessage.success('登录成功')
                     loginStore.loginAccountActions(res.data); // res.data 的类型为 LoginUserInfo
-                    ElMessage.success('登录成功');
                 } else {
                     ElMessage.error(res.message);
                 }

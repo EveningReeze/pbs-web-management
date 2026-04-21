@@ -14,6 +14,16 @@ export interface LoginUserInfo {
   token: string
   [key: string]: any // 如果有其他字段（如 avatar、role 等）
 }
+// 定义文章数据类型
+export interface ArticleForm {
+  title: string
+  categoryId: number
+  coverImage: string
+  content: string // 富文本 HTML 内容
+  summary: string // 文章摘要
+  status: 'published' | 'draft' // 状态：已发布 或 草稿
+  tags: string[]
+}
 
 // 登录接口的响应数据类型（成功时）
 export type LoginResponse = ApiResponse<LoginUserInfo>
