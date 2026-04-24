@@ -10,7 +10,8 @@ import {
   getLabelApi,
   deleteSubsetApi,
   deleteLabelApi,
-  getArticlesApi
+  getArticlesApi,
+  deleteArticleApi
 } from '@/api/index'
 // --- 防抖定时器 ---
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -298,13 +299,13 @@ export const useArticleList = () => {
         cancelButtonText: '取消'
       })
 
-      //   const res = await deleteArticleApi(article.id)
-      //   if (res.code === 200) {
-      //     ElMessage.success('删除成功')
-      //     fetchArticles() // 刷新列表
-      //   } else {
-      //     ElMessage.error(res.message || '删除失败')
-      //   }
+      const res = await deleteArticleApi({ articleId: article.id })
+      if (res.code === 200) {
+        ElMessage.success('删除成功')
+        fetchArticles() // 刷新列表
+      } else {
+        ElMessage.error(res.message || '删除失败')
+      }
     } catch (error) {
       if (error !== 'cancel') {
         console.error('删除文章失败:', error)

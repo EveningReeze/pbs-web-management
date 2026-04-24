@@ -1,7 +1,7 @@
 <template>
     <div class="article-container">
         <div style="margin: 5px;">
-            <h3>发布文章</h3>
+            <h3>{{ isEditMode ? '编辑文章' : '发布文章' }}</h3>
         </div>
 
         <el-form ref="ruleFormRef" :model="form" :rules="rules" label-width="100px">
@@ -17,14 +17,16 @@
                     <!-- 文章分组 -->
                     <el-form-item label="文章分组" prop="subsetGroup">
                         <el-radio-group v-model="form.subsetGroup" size="small">
-                            <el-radio-button :value="item.id" v-for="item in categoryTags" :label="item.subset_name" />
+                            <el-radio-button :value="item.id" v-for="item in categoryTags" :key="item.id">
+                                {{ item.subset_name }}
+                            </el-radio-button>
                         </el-radio-group>
                     </el-form-item>
 
                     <!-- 文章标签 -->
                     <el-form-item label="文章标签" prop="labelGroup">
                         <el-checkbox-group v-model="form.labelGroup" size="small">
-                            <el-checkbox-button v-for="item in labelTags" :key="item.id" :label="item.id">
+                            <el-checkbox-button v-for="item in labelTags" :key="item.id" :value="item.id">
                                 {{ item.label_name }}
                             </el-checkbox-button>
                         </el-checkbox-group>
@@ -68,7 +70,9 @@
 
             <!-- 操作按钮 -->
             <el-form-item>
-                <el-button type="primary" @click="submitForm(ruleFormRef)">发布</el-button>
+                <el-button type="primary" @click="submitForm(ruleFormRef)">
+                    {{ isEditMode ? '更新' : '发布' }}
+                </el-button>
                 <el-button @click="resetForm(ruleFormRef)">重置</el-button>
             </el-form-item>
         </el-form>
@@ -76,17 +80,18 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount, watch, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules, UploadProps } from 'element-plus'
 import { Plus, Delete } from '@element-plus/icons-vue'
 import { BASE_URL } from '@/utils/env'
-import { createArticleApi } from '@/api/index'
+import { createArticleApi, gainArticleApi, updateArticleApi, getSubsetApi, getLabelApi } from '@/api/index'
 import RichEditor from '@/components/Editor/index.vue'
-import { getSubsetApi, getLabelApi } from '@/api/index'
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router'
+
 const router = useRouter()
 const route = useRoute()
+
 // --- 类型定义 ---
 interface TagItem {
     id: number
@@ -115,6 +120,10 @@ const uploadUrl = ref(url)
 const categoryTags = ref<TagItem[]>([])
 const labelTags = ref<TagItem[]>([])
 
+// 编辑模式标识
+const isEditMode = ref(false)
+const articleId = ref<string>('')
+
 const form = reactive<ArticleForm>({
     title: '',
     introduce: "",
@@ -125,21 +134,9 @@ const form = reactive<ArticleForm>({
     serverFileName: '',
     fileId: 0
 })
-// 监听路由参数变化
-watch(
-    () => route.params.id,
-    (newId) => {
-        if (newId && newId !== 'new') {
-            // isEditMode.value = true
-            // articleId.value = newId as string
-            // fetchArticleDetail(newId as string)
-        } else {
-            // isEditMode.value = false
-            // resetForm()
-        }
-    },
-    { immediate: true }
-)
+
+
+
 // --- 生命周期 ---
 onMounted(() => {
     fetchSubsetList()
@@ -171,6 +168,56 @@ const fetchLabelList = async () => {
     } catch (error) {
         console.error('获取标签列表失败:', error)
         ElMessage.error('标签加载失败')
+    }
+}
+
+// 获取文章详情（编辑模式）
+const fetchArticleDetail = async (id: string) => {
+    try {
+        console.log(id);
+
+        const res = await gainArticleApi({ id })
+        console.log(res.code, res.data);
+
+        if (res.code === 200 && res.data) {
+            const article = res.data[0]
+
+            // 回显表单数据
+            form.title = article.title || ''
+            form.introduce = article.introduce || ''
+            form.content = article.content || ''
+            form.subsetGroup = article.subset_id || 0
+            form.labelGroup = article.label.split(',') || []
+            if (article.label) {
+                if (typeof article.label === 'string') {
+                    // 如果是字符串 "3,2"，转换为数组 [3, 2]
+                    form.labelGroup = article.label.split(',').map(Number).filter((id: any) => id !== 0)
+                } else if (Array.isArray(article.label)) {
+                    // 如果已经是数组，直接使用
+                    form.labelGroup = article.label
+                } else {
+                    form.labelGroup = []
+                }
+            } else {
+                form.labelGroup = []
+            }
+            // 回显封面图片
+            if (article.cover) {
+                // 判断是否是完整URL还是相对路径
+                if (article.cover.startsWith('http')) {
+                    form.imageUrl = article.cover
+                } else {
+                    form.imageUrl = `${BASE_URL}/uploads/${article.cover}`
+                }
+                form.serverFileName = article.cover
+                form.fileId = article.file_id || 0
+            }
+        } else {
+            ElMessage.error(res.message || '获取文章详情失败')
+        }
+    } catch (error) {
+        console.error('获取文章详情失败:', error)
+        ElMessage.error('获取文章详情失败')
     }
 }
 
@@ -285,6 +332,22 @@ const rules = reactive<FormRules<ArticleForm>>({
     content: [{ validator: validateContent, trigger: 'blur' }]
 })
 
+// 重置表单字段（不重置路由监听）
+const resetFormFields = () => {
+    form.title = ''
+    form.introduce = ''
+    form.content = ''
+    form.imageUrl = ''
+    form.subsetGroup = 0
+    form.labelGroup = []
+    form.serverFileName = ''
+    form.fileId = 0
+
+    if (ruleFormRef.value) {
+        ruleFormRef.value.clearValidate()
+    }
+}
+
 const submitForm = async (formEl: FormInstance | undefined) => {
     if (!formEl) return
     try {
@@ -304,14 +367,28 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 
         console.log('✅ 提交数据:', submitData)
 
-        const res = await createArticleApi(submitData)
+        let res
+        if (isEditMode.value) {
+            // 编辑模式：调用更新接口
+            console.log(articleId.value, submitData);
 
-        if (res.code === 200) {
-            ElMessage.success('文章发布成功！')
-            resetForm(ruleFormRef.value)
-            router.push("/main/article-list")
+            res = await updateArticleApi({ id: articleId.value, value: submitData })
+            if (res.code === 200) {
+                ElMessage.success('文章更新成功！')
+                router.push("/main/article-list")
+            } else {
+                ElMessage.error(res.message || '更新失败')
+            }
         } else {
-            ElMessage.error(res.message || '发布失败')
+            // 新增模式：调用创建接口
+            res = await createArticleApi(submitData)
+            if (res.code === 200) {
+                ElMessage.success('文章发布成功！')
+                resetForm(ruleFormRef.value)
+                router.push("/main/article-list")
+            } else {
+                ElMessage.error(res.message || '发布失败')
+            }
         }
 
     } catch (error) {
@@ -332,6 +409,23 @@ const resetForm = (formEl: FormInstance | undefined) => {
     form.serverFileName = ''
     form.fileId = 0
 }
+
+// --- 监听路由参数变化 ---
+watch(
+    () => route.params.id,
+    async (newId) => {
+        if (newId && newId !== 'new') {
+            isEditMode.value = true
+            articleId.value = newId as string
+            await fetchArticleDetail(newId as string)
+        } else {
+            isEditMode.value = false
+            articleId.value = ''
+            resetFormFields()
+        }
+    },
+    { immediate: true }
+)
 </script>
 
 <style scoped>
