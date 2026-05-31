@@ -274,10 +274,8 @@ export const useArticleList = () => {
 
   // 查看文章
   const handleViewArticle = (article: ArticleItem) => {
-    console.log(article)
-
     // 跳转到详情页
-    // router.push({ name: 'ArticleDetail', params: { id: article.id } })
+    router.push({ name: 'ArticleDetail', params: { id: article.id } })
   }
 
   // 编辑文章

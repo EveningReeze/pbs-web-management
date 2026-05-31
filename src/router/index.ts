@@ -35,11 +35,11 @@ const routes: RouteRecordRaw[] = [
       //   name: 'new-article',
       //   component: () => import('@/views/main/new-article/index.vue')
       // },
-      // {
-      //   path: '/main/article/edit/:id',
-      //   name: 'edit-article',
-      //   component: () => import('@/views/main/new-article/index.vue')
-      // },
+      {
+        path: '/main/music',
+        name: 'music',
+        component: () => import('@/views/main/music/index.vue')
+      },
       {
         path: '/main/article-list',
         name: 'article-list',
