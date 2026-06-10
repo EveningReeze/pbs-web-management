@@ -50,7 +50,7 @@ export const getArticlesApi = (data: object): Promise<ApiResponse> => service.po
 export const updateArticleApi = (data: object): Promise<ApiResponse> =>
   service.post('/updateArticle', data)
 // 获取文章详情
-export const gainArticleApi = (data: object): Promise<ApiResponse> =>
+export const getArticleDetail = (data: object): Promise<ApiResponse> =>
   service.post('/gainArticle', data)
 // 删除文章
 export const deleteArticleApi = (data: object): Promise<ApiResponse> =>

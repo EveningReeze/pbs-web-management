@@ -55,7 +55,6 @@ const emit = defineEmits<Emits>()
 const labelMap = computed(() => {
     const map = new Map<number, string>();
     labelTags.value.forEach((item: any) => {
-        console.log('标签项:', item);
         map.set(item.value, item.label);
     });
     return map;
@@ -63,7 +62,6 @@ const labelMap = computed(() => {
 
 // 根据 ID 获取标签名称（优化版）
 const getLabelNameById = (id: string): string => {
-    console.log(1);
 
     // 处理空值情况
     if (!id || id === 'undefined' || id === 'null') {
@@ -72,12 +70,10 @@ const getLabelNameById = (id: string): string => {
 
     // 统一转换为字符串处理
     const idStr = String(id);
-    console.log(2);
 
     // 处理单个 ID
     if (!idStr.includes(',')) {
         const numId = parseInt(idStr);
-        console.log(3, labelMap.value.get(numId));
         let str = "#" + labelMap.value.get(numId)
         // 修复：确保 labelMap 的 key 是 number 类型
         return str || '未分类';
@@ -89,7 +85,6 @@ const getLabelNameById = (id: string): string => {
         .map(numId => labelMap.value.get(numId))
         .filter((name): name is string => !!name)
         .map(name => `#${name}`);
-    console.log(4, names);
 
     return names.length > 0 ? names.join(' ') : '未分类';
 }

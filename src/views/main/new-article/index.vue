@@ -85,7 +85,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance, FormRules, UploadProps } from 'element-plus'
 import { Plus, Delete } from '@element-plus/icons-vue'
 import { BASE_URL } from '@/utils/env'
-import { createArticleApi, gainArticleApi, updateArticleApi, getSubsetApi, getLabelApi } from '@/api/index'
+import { createArticleApi, getArticleDetail, updateArticleApi, getSubsetApi, getLabelApi } from '@/api/index'
 import RichEditor from '@/components/Editor/index.vue'
 import { useRouter, useRoute } from 'vue-router'
 
@@ -174,10 +174,8 @@ const fetchLabelList = async () => {
 // 获取文章详情（编辑模式）
 const fetchArticleDetail = async (id: string) => {
     try {
-        console.log(id);
 
-        const res = await gainArticleApi({ id })
-        console.log(res.code, res.data);
+        const res = await getArticleDetail({ id })
 
         if (res.code === 200 && res.data) {
             const article = res.data[0]
@@ -223,8 +221,6 @@ const fetchArticleDetail = async (id: string) => {
 
 // --- 上传处理 ---
 const handleAvatarSuccess: UploadProps['onSuccess'] = (response, file) => {
-    console.log('上传响应:', response)
-    console.log('上传文件:', file)
 
     if (response && response.code === 200 && response.data) {
         form.serverFileName = response.data.url
@@ -243,7 +239,6 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (response, file) => {
 }
 
 const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-    console.log('上传URL:', uploadUrl.value)
 
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png']
     if (!allowedTypes.includes(rawFile.type)) {
@@ -365,12 +360,10 @@ const submitForm = async (formEl: FormInstance | undefined) => {
             moment: new Date()
         }
 
-        console.log('✅ 提交数据:', submitData)
 
         let res
         if (isEditMode.value) {
             // 编辑模式：调用更新接口
-            console.log(articleId.value, submitData);
 
             res = await updateArticleApi({ id: articleId.value, value: submitData })
             if (res.code === 200) {

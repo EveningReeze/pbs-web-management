@@ -115,8 +115,6 @@ export const useArticleList = () => {
     try {
       const activeCategory = categoryTags.value.find((tag) => tag.active)
       const activeLabel = labelTags.value.find((tag) => tag.active)
-      console.log(activeCategory, '=----activeCategory')
-      console.log(activeLabel, '=----activeLabel')
 
       const params = {
         searchTerm: state.search, // 可选
@@ -128,9 +126,7 @@ export const useArticleList = () => {
       const res = await getArticlesApi(params)
       state.articles = res.data?.result || []
       state.total = res.data?.total || 0
-    } catch (error) {
-      console.log(error)
-
+    } catch (err) {
       ElMessage.error('获取文章列表失败')
     } finally {
       state.loading = false
@@ -139,20 +135,16 @@ export const useArticleList = () => {
 
   // 分类标签点击
   const handleCategoryChange = (index: number, item: TagItem) => {
-    console.log('分类切换:', item.label)
     fetchArticles()
   }
 
   // 标签点击
   const handleLabelChange = (index: number, item: TagItem) => {
-    console.log('标签切换:', item.label)
     fetchArticles()
   }
 
   // 新建分组
   const handleCreateGroup = async (name: string) => {
-    console.log(name)
-
     if (!name.trim()) {
       ElMessage.warning('请输入分组名称')
       return
@@ -164,7 +156,6 @@ export const useArticleList = () => {
     }
     try {
       const res = await addSubsetApi(params)
-      console.log(res)
       if (res.code === 200) {
         ElMessage.success(`分组 "${name}" 创建成功`)
         groupingValue.value = '' // 清空输入
@@ -273,23 +264,21 @@ export const useArticleList = () => {
   }
 
   // 查看文章
-  const handleViewArticle = (article: ArticleItem) => {
+  const handleViewArticle = (id: number | string) => {
+    console.log(id)
+
     // 跳转到详情页
-    router.push({ name: 'ArticleDetail', params: { id: article.id } })
+    router.push({ name: 'article-detail', params: { id: id } })
   }
 
   // 编辑文章
   const handleEditArticle = (article: ArticleItem) => {
-    console.log(article)
-
     // 跳转到编辑页
     router.push({ name: 'article-form', params: { id: article.id } })
   }
 
   // 删除文章
   const handleDeleteArticle = async (article: ArticleItem) => {
-    console.log(article)
-
     try {
       await ElMessageBox.confirm('确定删除该文章吗？', '提示', {
         type: 'warning',

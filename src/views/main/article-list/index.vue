@@ -42,7 +42,8 @@
                         </div>
                         <template v-else>
                             <ArticleCard v-for="article in articles" :key="article.id" :article="article"
-                                @view="handleViewArticle" @edit="handleEditArticle" @delete="handleDeleteArticle" />
+                                @view="handleViewArticle(article.id)" @edit="handleEditArticle"
+                                @delete="handleDeleteArticle" />
                             <div v-if="articles.length === 0" class="empty-wrapper">
                                 <el-empty description="暂无文章" />
                             </div>

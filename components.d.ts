@@ -12,6 +12,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AdvancedChart: typeof import('./src/components/charts/AdvancedChart.vue')['default']
+    ArticleDetail: typeof import('./src/components/article-detail/ArticleDetail.vue')['default']
     AsideMenu: typeof import('./src/components/main-menu/main-menu.vue')['default']
     Editor: typeof import('./src/components/Editor/index.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']

@@ -104,7 +104,6 @@ const toolbarConfig = {
 
 // --- 自定义图片上传函数 ---
 const customUploadImage = async (file, insertFn) => {
-    console.log('开始上传图片:', file)
 
     // 创建 FormData
     const formData = new FormData()
@@ -177,7 +176,6 @@ const editorConfig = computed(() => ({
 
             // 自定义插入图片（处理后端返回的标准格式）
             customInsert: (res, insertFn) => {
-                console.log('customInsert:', res)
                 if (res.code === 200 && res.data) {
                     const url = res.data.url || res.data
                     insertFn(url, '', '')
@@ -208,7 +206,6 @@ const editorConfig = computed(() => ({
 // --- 编辑器事件处理 ---
 const handleCreated = (editor) => {
     editorRef.value = editor
-    console.log('编辑器创建成功', editor)
 
     // 可选：设置编辑器焦点
     // editor.focus()
@@ -222,7 +219,6 @@ const handleChange = (editor) => {
 }
 
 const handleDestroyed = () => {
-    console.log('编辑器已销毁')
 }
 
 // --- 暴露方法给父组件 ---

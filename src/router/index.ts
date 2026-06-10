@@ -49,6 +49,12 @@ const routes: RouteRecordRaw[] = [
         path: '/main/echart',
         name: 'echart',
         component: () => import('@/views/main/echart/echart.vue')
+      },
+      // 文章详情
+      {
+        path: '/main/article-detail/:id?',
+        name: 'article-detail',
+        component: () => import('@/components/article-detail/ArticleDetail.vue')
       }
     ]
   },
