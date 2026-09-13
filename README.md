@@ -1,4 +1,3 @@
-这是一个非常典型的**前后端分离**的个人博客系统。结合您的前端截图，我为您补充了合理的后端架构和功能描述，并整理成了一份标准的 Markdown 项目说明文档。您可以直接复制以下内容保存为 `README.md` 或用于简历项目经历。
 
 ---
 
@@ -77,7 +76,7 @@ pbs-web-management/          # 前端项目
 │   └── vite.config.js
 
 
-pbs-management-styst/           # 后端项目
+pbs-management-system/           # 后端项目
     ├── src/
     │   ├── config/         # 数据库、Redis、OSS 配置
     │   ├── controllers/    # 控制器 (处理 HTTP 请求)
@@ -89,6 +88,3 @@ pbs-management-styst/           # 后端项目
     ├── app.js              # 应用入口
     └── package.json
 ```
-
----
-*注：以上后端技术栈为基于前端功能需求的合理推断，您可以根据自己实际使用的后端语言（如 Java Spring Boot、Python Django 等）替换对应的技术名词。*
