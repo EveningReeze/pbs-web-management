@@ -64,8 +64,7 @@
 ## 五、 项目结构（参考）
 
 ```text
-blog-system/
-├── blog-frontend/          # 前端项目
+pbs-web-management/          # 前端项目
 │   ├── src/
 │   │   ├── api/            # Axios 接口封装
 │   │   ├── assets/         # 静态资源
@@ -76,8 +75,9 @@ blog-system/
 │   │   ├── views/          # 页面视图 (看板、文章列表、发布文章)
 │   │   └── App.vue
 │   └── vite.config.js
-│
-└── blog-backend/           # 后端项目
+
+
+pbs-management-styst/           # 后端项目
     ├── src/
     │   ├── config/         # 数据库、Redis、OSS 配置
     │   ├── controllers/    # 控制器 (处理 HTTP 请求)
